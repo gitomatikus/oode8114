@@ -56,6 +56,73 @@ class Radio(commands.Cog, name="radio"):
     async def play(self, context: SlashContext, url: str):
         await self.add_to_queue(context, url)
 
+    @cog_ext.cog_slash(
+        name="radio",
+        description="enable radio.",
+        guild_ids=[245513626381713408, 908764079177478185]
+    )
+    async def radio(self, context: SlashContext):
+        await self.add_to_queue(context, "https://www.youtube.com/playlist?list=PLmQipPGFsbYbujv3UnOaSYxrthRrakUVl")
+
+    @cog_ext.cog_slash(
+        name="voina",
+        description="beskonechnaya strelba nad golovoi.",
+        guild_ids=[245513626381713408, 908764079177478185]
+    )
+    async def voina(self, context: SlashContext):
+        await self.add_to_queue(context, "https://www.youtube.com/watch?v=QPL0QDBuELw")
+
+    @cog_ext.cog_slash(
+        name="next",
+        description="next song in playlist",
+        guild_ids=[245513626381713408, 908764079177478185]
+    )
+    async def next(self, context: SlashContext):
+        context.voice_client.stop()
+        await context.send('next song')
+
+    @cog_ext.cog_slash(
+        name="993",
+        description="1000-7",
+        guild_ids=[245513626381713408, 908764079177478185]
+    )
+    async def shiza(self, context: SlashContext):
+        await self.add_to_queue(context, "https://www.youtube.com/watch?v=eXvPgDmMLDk")
+
+    @cog_ext.cog_slash(
+        name="leave",
+        description="disable radio.",
+        guild_ids=[245513626381713408, 908764079177478185]
+    )
+    async def leave(self, context: SlashContext):
+        self._videos = []
+        self._index = 0
+        voice = context.voice_client
+        await voice.disconnect()
+        await context.send('Пока-пока')
+
+
+    def stream(self, context, index):
+        try:
+            video = self._videos[index]
+        except IndexError:
+            return
+        audiourl = self.audiourl(video["url"])
+        voice = context.voice_client
+        try:
+            voice.stop()
+        except:
+            pass
+        self._index += 1
+        voice.play(FFmpegPCMAudio(audiourl), after=lambda x: self.stream(context, self._index))
+        self.sendtitle(video)
+
+    def sendtitle(self, video):
+        if "https://" not in video["url"]:
+            video["url"] = "https://youtube.com/watch?v=" + video["url"]
+        title = video["title"] + " [" + video["url"] + "]"
+        self._client.loop.create_task(self._msg.edit(content=title))
+
     async def add_to_queue(self, context: SlashContext, url: str):
         if "playlist" in url:
             videos = self.playlistvideos(url)
@@ -80,73 +147,6 @@ class Radio(commands.Cog, name="radio"):
             self.stream(ctx, self._index)
         else:
             self._videos += videos
-
-    @cog_ext.cog_slash(
-        name="radio",
-        description="enable radio.",
-        guild_ids=[245513626381713408, 908764079177478185]
-    )
-    async def radio(self, context: SlashContext):
-        await self.add_to_queue(context, "https://www.youtube.com/playlist?list=PLmQipPGFsbYbujv3UnOaSYxrthRrakUVl")
-
-    @cog_ext.cog_slash(
-        name="voina",
-        description="beskonechnaya strelba nad golovoi.",
-        guild_ids=[245513626381713408, 908764079177478185]
-    )
-    async def voina(self, context: SlashContext):
-        await self.add_to_queue(context, "https://www.youtube.com/watch?v=QPL0QDBuELw")
-
-    def stream(self, context, index):
-        try:
-            video = self._videos[index]
-        except IndexError:
-            return
-        audiourl = self.audiourl(video["url"])
-        voice = context.voice_client
-        try:
-            voice.stop()
-        except:
-            pass
-        self._index += 1
-        voice.play(FFmpegPCMAudio(audiourl), after=lambda x: self.stream(context, self._index))
-        self.sendtitle(video)
-
-    @cog_ext.cog_slash(
-        name="leave",
-        description="disable radio.",
-        guild_ids=[245513626381713408, 908764079177478185]
-    )
-    async def leave(self, context: SlashContext):
-        self._videos = []
-        self._index = 0
-        voice = context.voice_client
-        await voice.disconnect()
-        await context.send('Пока-пока')
-
-    def sendtitle(self, video):
-        if "https://" not in video["url"]:
-            video["url"] = "https://youtube.com/watch?v=" + video["url"]
-        title = video["title"] + " [" + video["url"] + "]"
-        self._client.loop.create_task(self._msg.edit(content=title))
-
-    @cog_ext.cog_slash(
-        name="next",
-        description="next song in playlist",
-        guild_ids=[245513626381713408, 908764079177478185]
-    )
-    async def next(self, context: SlashContext):
-        context.voice_client.stop()
-        await context.send('next song')
-
-
-    @cog_ext.cog_slash(
-        name="993",
-        description="1000-7",
-        guild_ids=[245513626381713408, 908764079177478185]
-    )
-    async def shiza(self, context: SlashContext):
-        await self.add_to_queue(context, "https://www.youtube.com/watch?v=eXvPgDmMLDk")
 
     async def lastmessage(self, context):
         message = await context.channel.fetch_message(context.channel.last_message_id)
