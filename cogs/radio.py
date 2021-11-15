@@ -157,7 +157,10 @@ class Radio(commands.Cog, name="radio"):
 
     def playlistvideos(self, url: str):
         try:
-            process = Popen(['youtube-dl.exe', '--flat-playlist', '--dump-single-json', '--playlist-random', url], stdout=PIPE, stderr=PIPE)
+            ydl = "youtube-dl"
+            if os.name == 'nt':
+                ydl += '.exe'
+            process = Popen([ydl, '--flat-playlist', '--dump-single-json', '--playlist-random', url], stdout=PIPE, stderr=PIPE)
             playlist, stderr = process.communicate()
             playlist = json.loads(playlist)["entries"]
             return playlist
