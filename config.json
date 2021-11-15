@@ -1,9 +1,7 @@
 {
-  "bot_prefix": "YOUR_BOT_PREFIX_HERE",
-  "token": "YOUR_BOT_TOKEN_HERE",
-  "application_id": "YOUR_APPLICATION_ID_HERE",
+  "bot_prefix": "Oodeb114#3468",
+  "token": "OTA4NzYxNzQ4MTU1MjY5MTMw.YY6cVA.w4ab1x_oVS51ZgfZ2pgQZKMEnCM",
+  "application_id": "908761748155269130",
   "owners": [
-    123456789,
-    987654321
   ]
 }
