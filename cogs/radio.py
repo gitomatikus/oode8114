@@ -157,10 +157,7 @@ class Radio(commands.Cog, name="radio"):
 
     def playlistvideos(self, url: str):
         try:
-            ydl = "youtube-dl"
-            if os.name == 'nt':
-                ydl += '.exe'
-            process = Popen([ydl, '--flat-playlist', '--dump-single-json', '--playlist-random', url], stdout=PIPE, stderr=PIPE)
+            process = Popen([self.getydl(), '--flat-playlist', '--dump-single-json', '--playlist-random', url], stdout=PIPE, stderr=PIPE)
             playlist, stderr = process.communicate()
             playlist = json.loads(playlist)["entries"]
             return playlist
@@ -168,7 +165,7 @@ class Radio(commands.Cog, name="radio"):
             print("songs not loaded", url)
 
     def singlevideo(self, url: str):
-            process = Popen(['youtube-dl.exe', '-e', url], stdout=PIPE, stderr=PIPE)
+            process = Popen([self.getydl(), '-e', url], stdout=PIPE, stderr=PIPE)
             title, stderr = process.communicate()
             song = {}
             song["title"] = codecs.decode(title, 'windows-1251')
@@ -177,10 +174,15 @@ class Radio(commands.Cog, name="radio"):
 
 
     def audiourl(self, url: str):
-        process = Popen(['youtube-dl.exe', '-g', '-f', 'bestaudio', url], stdout=PIPE, stderr=PIPE)
+        process = Popen([self.getydl(), '-g', '-f', 'bestaudio', url], stdout=PIPE, stderr=PIPE)
         audiourl, stderr = process.communicate()
         return audiourl
 
+    def getydl(self):
+        ydl = "youtube-dl"
+        if sys.platform == 'win32':
+            ydl += '.exe'
+        return ydl
 
 def setup(bot):
     bot.add_cog(Radio(bot))
