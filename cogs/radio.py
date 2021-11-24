@@ -101,7 +101,6 @@ class Radio(commands.Cog, name="radio"):
         await voice.disconnect()
         await context.send('Пока-пока')
 
-
     def stream(self, context, index):
         try:
             video = self._videos[index]
@@ -114,7 +113,10 @@ class Radio(commands.Cog, name="radio"):
         except:
             pass
         self._index += 1
-        voice.play(FFmpegPCMAudio(audiourl), after=lambda x: self.stream(context, self._index))
+        FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
+                          'options': '-vn'}
+
+        voice.play(FFmpegPCMAudio(audiourl, **FFMPEG_OPTIONS))
         self.sendtitle(video)
 
     def sendtitle(self, video):

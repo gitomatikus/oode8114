@@ -2,5 +2,6 @@ aiohttp
 asyncio
 discord-py-interactions
 discord.py[voice]
+discord.py
 yt-dlp
 discord
