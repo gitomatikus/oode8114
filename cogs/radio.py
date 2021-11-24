@@ -126,18 +126,18 @@ class Radio(commands.Cog, name="radio"):
         self._client.loop.create_task(self._msg.edit(content=title))
 
     async def add_to_queue(self, context: SlashContext, url: str):
+        await context.send("Добавлено в очередь \"У Дебила FM\"")
+        ctx = context
         if "playlist" in url:
             videos = self.playlistvideos(url)
         else:
             videos =(self.singlevideo(url))
         self._msg = None
 
-        ctx = context
         voice = context.author.voice
         if not voice:
             await ctx.send("Может сперва в канал зайдешь?")
             return
-        await ctx.send("Добавлено в очередь \"У Дебила FM\"")
         await self.lastmessage(ctx)
         try:
             await voice.channel.connect()
