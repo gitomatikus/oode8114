@@ -90,6 +90,28 @@ class Radio(commands.Cog, name="radio"):
         await self.add_to_queue(context, "https://www.youtube.com/watch?v=eXvPgDmMLDk")
 
     @cog_ext.cog_slash(
+        name="moon",
+        description="moon",
+        guild_ids=[245513626381713408, 908764079177478185]
+    )
+    async def mooncmd(self, context: SlashContext):
+        await context.send("Понял тебя")
+        await context.author.voice.channel.connect()
+        self.moon(context)
+
+    def moon(self, context: SlashContext):
+        audiourl = self.audiourl("https://www.youtube.com/watch?v=X-qKS52UVZ8")
+        voice = context.voice_client
+        try:
+            voice.stop()
+        except:
+            pass
+        FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
+                          'options': '-vn'}
+        if not self._videos:
+            voice.play(FFmpegPCMAudio(audiourl, **FFMPEG_OPTIONS), after=lambda x: self.moon(context))
+
+    @cog_ext.cog_slash(
         name="leave",
         description="disable radio.",
         guild_ids=[245513626381713408, 908764079177478185]
